@@ -6,6 +6,9 @@
 from ccxt.base.exchange import Exchange
 import hashlib
 import math
+import hmac
+import base64
+import datetime
 from ccxt.base.errors import AuthenticationError
 from ccxt.base.errors import InsufficientFunds
 from ccxt.base.errors import InvalidOrder
@@ -415,13 +418,22 @@ class okex3 (Exchange):
     def nonce(self):
         return self.milliseconds()
 
+    @staticmethod
+    def hmac(request, secret, algorithm=hashlib.sha256, digest='hex'):
+        h = hmac.new(bytes(secret, encoding="utf8"), bytes(request, encoding="utf8"), algorithm)
+        if digest == 'hex':
+            return h.hexdigest()
+        elif digest == 'base64':
+            return base64.b64encode(h.digest())
+        return h.digest()
+
     def sign(self, path, api='spot', method='GET', params={}, headers=None, body=None):
         request = '/'
         request += self.implode_params(path, params)
         query = self.omit(params, self.extract_params(path))
         url = self.urls['api'][api] + request
         # console.log(path, request, url)
-        nonce = str(self.nonce())
+        nonce = int(self.nonce())
         timestamp = self.iso8601(nonce) or ''
         payloadPath = url.replace(self.urls['www'], '')
         payload = timestamp + method

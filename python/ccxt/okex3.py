@@ -60,6 +60,7 @@ class okex3 (Exchange):
                 'api': {
                     'spot': 'https://www.okex.com/api/spot/v3',
                     'account': 'https://www.okex.com/api/account/v3',
+                    'futures': 'https://www.okex.com/api/futures/v3',
                 },
                 'www': 'https://www.okex.com',
                 'doc': 'https://www.okex.com/docs/en',
@@ -87,6 +88,11 @@ class okex3 (Exchange):
                         'wallet',
                     ],
                 },
+                'futures': {
+                    'get': [
+                        'accounts'
+                    ]
+                }
             },
             'fees': {
                 'trading': {
